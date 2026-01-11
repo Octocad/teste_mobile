@@ -20,7 +20,8 @@ const EditPostScreen = ({ route, navigation }) => {
       const post = response.data;
       setTitle(post.title);
       setContent(post.content);
-      setAuthor(post.author?.name || '');
+      const authorValue = typeof post.author === 'string' ? post.author : post.author?.name || '';
+      setAuthor(authorValue);
     } catch (error) {
       console.error(error);
     }

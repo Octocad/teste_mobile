@@ -21,6 +21,11 @@ const CreateStudentScreen = ({ navigation }) => {
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível criar o estudante');
     }
+    finally {
+      setName('');
+      setEmail('');
+      setPassword('');
+    }
   };
 
   return (

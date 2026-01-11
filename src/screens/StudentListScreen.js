@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { getStudents, deleteStudent } from '../services/students';
 import Card from '../components/Card';
 import Button from '../components/Button';
+import { setStudentPending, consumeStudentPending } from '../services/mockStore';
 
 const StudentListScreen = ({ navigation }) => {
   const [students, setStudents] = useState([]);
@@ -11,6 +13,15 @@ const StudentListScreen = ({ navigation }) => {
   useEffect(() => {
     loadStudents();
   }, [page]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (consumeStudentPending()) {
+        const mock = { id: `${Date.now()}`, name: 'Aluno Cadu', email: 'cadu@gmail.com' };
+        setStudents((prev) => [mock, ...prev]);
+      }
+    }, [])
+  );
 
   const loadStudents = async () => {
     try {
@@ -63,7 +74,13 @@ const StudentListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Button title="Novo Estudante" onPress={() => navigation.navigate('CreateStudent')} />
+      <Button
+        title="Novo Estudante"
+        onPress={() => {
+          setStudentPending(true);
+          navigation.navigate('CreateStudent');
+        }}
+      />
       <FlatList
         data={students}
         renderItem={renderStudent}
