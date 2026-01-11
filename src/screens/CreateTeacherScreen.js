@@ -21,6 +21,11 @@ const CreateTeacherScreen = ({ navigation }) => {
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível criar o professor');
     }
+    finally {
+      setName('');
+      setEmail('');
+      setPassword('');
+    }
   };
 
   return (
