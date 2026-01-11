@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { getPost } from '../services/posts';
+import { getCurrentUser } from '../services/auth';
 import Button from '../components/Button';
 
 const PostDetailScreen = ({ route, navigation }) => {
   const { postId } = route.params;
   const [post, setPost] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     loadPost();
+    loadUser();
   }, []);
 
   const loadPost = async () => {
@@ -17,6 +20,15 @@ const PostDetailScreen = ({ route, navigation }) => {
       setPost(response.data);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const loadUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      setUserRole(user?.role ?? null);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -33,12 +45,14 @@ const PostDetailScreen = ({ route, navigation }) => {
       <Text style={styles.title}>{post.title}</Text>
       <Text style={styles.author}>Autor: {post.author?.name || post.author}</Text>
       <Text style={styles.content}>{post.content}</Text>
-      <View style={styles.actions}>
-        <Button
-          title="Editar"
-          onPress={() => navigation.navigate('EditPost', { postId: post.id ?? post._id })}
-        />
-      </View>
+      {userRole !== 'student' && (
+        <View style={styles.actions}>
+          <Button
+            title="Editar"
+            onPress={() => navigation.navigate('EditPost', { postId: post.id ?? post._id })}
+          />
+        </View>
+      )}
     </ScrollView>
   );
 };
